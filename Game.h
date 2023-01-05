@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "MainForm.h"
 #include "BoardCell.h"
-#include <iostream>
+#include "Ship.h"
 
 
 namespace Battleship {
@@ -13,6 +13,7 @@ namespace Battleship {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Collections::Generic;
 
 	/// <summary>
 	/// Сводка для Game
@@ -52,6 +53,9 @@ namespace Battleship {
 		MainForm^ parentForm;
 		array<BoardCell^, 2>^ _cellsMap = gcnew array<BoardCell^, 2>(11, 11);
 		array<BoardCell^, 2>^ _cellsEnemyMap = gcnew array<BoardCell^, 2>(11, 11);
+		List<Ship^>^ _ships = gcnew List<Ship^>;
+		List<Ship^>^ _enemyShips = gcnew List<Ship^>;
+
 
 		void Init() {
 			CreateMaps();
@@ -81,13 +85,14 @@ namespace Battleship {
 				}
 			}
 
-			GenerateShips(_cellsMap);
+			GenerateShips(_cellsMap, _ships, true);
 
 			for (int i = 0; i < mapSize; i++) {
 				for (int j = 0; j < mapSize; j++) {
 					BoardCell^ cell = gcnew BoardCell(360 + j * cellSize, i * cellSize);
 					cell->State = BoardCellState::Empty;
 					cell->Size = System::Drawing::Size(cellSize, cellSize);
+					cell->Click += gcnew System::EventHandler(this, &Game::OnCellClick);
 					if (j == 0 || i == 0) {
 						cell->BackColor = Color::Gray;
 						if (i == 0 && j > 0) {
@@ -104,7 +109,7 @@ namespace Battleship {
 				}
 			}
 
-			GenerateShips(_cellsEnemyMap);
+			GenerateShips(_cellsEnemyMap, _enemyShips, false);
 
 			Label^ map1Title = gcnew Label();
 			map1Title->Text = "Карта игрока 1";
@@ -117,135 +122,93 @@ namespace Battleship {
 			this->Controls->Add(map2Title);
 		}
 
-		void GenerateShips(array<BoardCell^, 2>^ _cells) {
+		void GenerateShips(array<BoardCell^, 2>^ _cells, List<Ship^>^ _ships, bool drawShips) {
 			int ships[] = { 4, 3, 2, 1 };
 			int x, y;
 			int dir = 0;
 			int type = 3;
 			while (ships[0] > 0) {
 				if (ships[type] == 0) type--;
-				x = random->Next(1, 10);
-				y = random->Next(1, 10);
+				x = random->Next(1, 11);
+				y = random->Next(1, 11);
 				dir = random->Next(2);
-				if (insertShip(x, y, type, dir, _cells)) {
+				if (insertShip(x, y, type, dir, _cells, _ships, drawShips)) {
 					ships[type]--;
 				}
 			}
 		}
 
-		bool insertShip(int x, int y, int type, int dir, array<BoardCell^, 2>^ _cells) {
+		bool insertShip(int x, int y, int type, int dir, array<BoardCell^, 2>^ _cells, List<Ship^>^ _ships, bool drawShips) {
 			int lengthShip = type + 1;
 			if (x < 1 || x > mapSize - 1 || y < 1 || y > mapSize - 1)
 				return false;
-			bool flag = true;
-			switch (dir) {
-			case 0:
-				if (lengthShip + x > mapSize - 1)
-					return false;
-				for (int i = x; i < x + lengthShip; i++) {
-					if (flag)
-						flag = test(i, y, _cells);
-					else break;
+			if (test(x, y, lengthShip, dir, _ships)) {
+				switch (dir) {
+					case 0:
+						if (lengthShip + x > mapSize - 1)
+							return false;
+						_ships->Add(gcnew Ship(x, y, lengthShip, dir));
+						if (drawShips) {
+							for (int i = x; i < x + lengthShip; i++) {
+								_cells[i, y]->State = BoardCellState::Ship;
+							}
+						}
+					break;
+					case 1:
+						if (lengthShip + y > mapSize - 1)
+							return false;
+						_ships->Add(gcnew Ship(x, y, lengthShip, dir));
+						if (drawShips) {
+							for (int i = y; i < y + lengthShip; i++) {
+								_cells[x, i]->State = BoardCellState::Ship;
+							}
+						}
+					break;
 				}
-				if (!flag) {
-					return false;
-				}
-				else {
-					for (int i = x; i < x + lengthShip; i++) {
-						_cells[i, y]->State = BoardCellState::Ship;
-					}
-					return true;
-				}
-				break;
-			case 1:
-				if (lengthShip + y > mapSize - 1)
-					return false;
-				for (int i = y; i < y + lengthShip; i++) {
-					if (flag)
-						flag = test(x, i, _cells);
-					else break;
-				}
-				if (!flag) {
-					return false;
-				}
-				else {
-					for (int i = y; i < y + lengthShip; i++) {
-						_cells[x, i]->State = BoardCellState::Ship;
-					}
-					return true;
-				}
-				break;
+				return true;
+			}
+			else {
+				return false;
 			}
 		}
 
-		bool test(int x, int y, array<BoardCell^, 2>^ _cells) {
-			if (x == 1) {
-				if (y != 1 && y != mapSize - 1 && (_cells[x, y]->State == BoardCellState::Ship || _cells[x + 1, y]->State == BoardCellState::Ship ||
-					_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x + 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x + 1, y - 1]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (y == mapSize - 1 && (_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x + 1, y - 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x + 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (y == 1 && (_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x + 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x + 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
+		bool test(int x, int y, int length, int orientation, List<Ship^>^ _ships) {
+			int width, height;
+			if (orientation == 0) {
+				width = length + 2;
+				height = 3;
+				x -= 1;
+				y -= 1;
 			}
-			if (x == mapSize - 1) {
-				if (y != 1 && y != mapSize - 1 && (_cells[x, y]->State == BoardCellState::Ship || _cells[x - 1, y]->State == BoardCellState::Ship ||
-					_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x - 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x - 1, y - 1]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (y == mapSize - 1 && (_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x - 1, y - 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x - 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (y == 1 && (_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x - 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x - 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
+			else {
+				width = 3;
+				height = length + 2;
+				x -= 1;
+				y -= 1;
 			}
-			if (y == 1) {
-				if (x != 1 && x != mapSize - 1 && (_cells[x - 1, y]->State == BoardCellState::Ship || _cells[x, y]->State == BoardCellState::Ship ||
-					_cells[x + 1, y]->State == BoardCellState::Ship || _cells[x - 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x + 1, y + 1]->State == BoardCellState::Ship))
+
+			for each (Ship ^ ship in _ships) {
+				int yRight = ship->y, xRight = ship->x;
+				if (ship->orientation) {
+					yRight = ship->y + ship->length - 1;
+				}
+				else {
+					xRight = ship->x + ship->length - 1;
+				}
+				if (!(ship->x > x + width - 1 || xRight < x || ship->y > y + height - 1 || yRight < y)) {
 					return false;
-				else return true;
-				if (x == 1 && (_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x + 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x + 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (x == mapSize - 1 && (_cells[x, y + 1]->State == BoardCellState::Ship || _cells[x - 1, y + 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x - 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
+				}
 			}
-			if (y == mapSize - 1) {
-				if (x != 1 && x != mapSize - 1 && (_cells[x - 1, y]->State == BoardCellState::Ship || _cells[x, y]->State == BoardCellState::Ship ||
-					_cells[x + 1, y]->State == BoardCellState::Ship || _cells[x - 1, y - 1]->State == BoardCellState::Ship ||
-					_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x + 1, y - 1]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (x == mapSize - 1 && (_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x - 1, y - 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x - 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-				if (x == 1 && (_cells[x, y - 1]->State == BoardCellState::Ship || _cells[x + 1, y - 1]->State == BoardCellState::Ship ||
-					_cells[x, y]->State == BoardCellState::Ship || _cells[x + 1, y]->State == BoardCellState::Ship))
-					return false;
-				else return true;
-			}
-			if (_cells[x - 1, y - 1]->State == BoardCellState::Ship || _cells[x, y - 1]->State == BoardCellState::Ship ||
-				_cells[x + 1, y - 1]->State == BoardCellState::Ship || _cells[x - 1, y]->State == BoardCellState::Ship ||
-				_cells[x, y]->State == BoardCellState::Ship || _cells[x + 1, y]->State == BoardCellState::Ship ||
-				_cells[x - 1, y + 1]->State == BoardCellState::Ship || _cells[x, y + 1]->State == BoardCellState::Ship ||
-				_cells[x + 1, y + 1]->State == BoardCellState::Ship)
-				return false;
 			return true;
+		}
+
+		Ship^ getShip(int x, int y, List<Ship^>^ _ships) {
+			for each(Ship^ ship in _ships) {
+				if (ship->isLocatedAt(x, y)) {
+					return ship;
+				}
+			}
+			return nullptr;
 		}
 
 		/// <summary>
@@ -267,5 +230,12 @@ namespace Battleship {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 		}
 #pragma endregion
+	void Game::OnCellClick(Object^ sender, EventArgs^ e)
+	{
+
+		BoardCell^ cell = safe_cast<BoardCell^>(sender);
+		BoardCellEventArgs^ eventArgs = gcnew BoardCellEventArgs(cell->X, cell->Y);
+		OnClick(eventArgs);
+	};
 	};
 }

@@ -124,6 +124,7 @@
     <ClCompile Include="BoardCell.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="MainForm.cpp" />
+    <ClCompile Include="Ship.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoardCell.h" />
@@ -133,6 +134,7 @@
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Ship.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Game.resx">

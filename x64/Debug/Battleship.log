@@ -1,7 +1,5 @@
 ﻿  Game.cpp
   MainForm.cpp
   Создание кода...
-G:\projects\Battleship\Game.h(179): warning C4715: Battleship::Game::insertShip: значение возвращается не при всех путях выполнения
-G:\projects\Battleship\Game.h(179): warning C4715: Battleship::Game::insertShip: значение возвращается не при всех путях выполнения
   BoardCell.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
   Battleship.vcxproj -> G:\projects\Battleship\x64\Debug\Battleship.exe
