@@ -1,0 +1,6 @@
+G:\projects\Battleship\x64\Debug\Battleship.vcxproj.AssemblyReference.cache
+G:\projects\Battleship\x64\Debug\Battleship.vcxproj.SuggestedBindingRedirects.cache
+G:\projects\Battleship\x64\Debug\Battleship.vcxproj.GenerateResource.cache
+G:\projects\Battleship\x64\Debug\Battleship.exe
+G:\projects\Battleship\x64\Debug\Battleship.MainForm.resources
+G:\projects\Battleship\x64\Debug\Battleship.Game.resources
