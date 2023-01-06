@@ -23,6 +23,7 @@ Struct BoardCellState: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeField
     BoardCellState MissedShot = 1 : Public, Static, Literal, HasDefault
     BoardCellState Ship = 2 : Public, Static, Literal, HasDefault
     BoardCellState ShotShip = 3 : Public, Static, Literal, HasDefault
+    BoardCellState ShipSunked = 4 : Public, Static, Literal, HasDefault
 Class Battleship.MainForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
@@ -31,3 +32,10 @@ Class Battleship.Game: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(Battleship.MainForm): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Fields:
     System.Random random : Public
+Struct ShotResult: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    ShotResult Missed = 0 : Public, Static, Literal, HasDefault
+    ShotResult ShipHit = 1 : Public, Static, Literal, HasDefault
+    ShotResult ShipSunked = 2 : Public, Static, Literal, HasDefault

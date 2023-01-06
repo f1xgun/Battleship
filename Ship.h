@@ -9,7 +9,9 @@ public:
 	int length;
 	int hitCount;
 	int orientation;
-	bool isSunk;
+	property bool isSunk{
+		bool get();
+	}
 
 	bool isLocatedAt(int x, int y);
 };

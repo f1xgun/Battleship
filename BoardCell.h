@@ -8,7 +8,8 @@ public enum struct BoardCellState
 	Empty,
 	MissedShot,
 	Ship,
-	ShotShip
+	ShotShip,
+	ShipSunked
 };
 
 ref class BoardCell : Label
@@ -17,9 +18,10 @@ private:
 	static initonly Color DefaultBorderColor = Color::FromArgb(214, 214, 214);
 	static initonly Color DefaultBackgroundColor = Color::FromArgb(222, 222, 222);
 	static initonly Color ShipColor = Color::FromArgb(0, 255, 25);
+	static initonly Color ShipSunkedColor = Color::FromArgb(222, 0, 0);
 
-	static initonly Char ShipHitChar = (Char)(0x72);
-	static initonly Char MissedHitChar = (Char)(0x3D);
+	static initonly Char ShipHitChar = 'x';
+	static initonly Char MissedHitChar = (Char)(0x2022);
 
 	void OnCellStateChenged();
 	BoardCellState _state;
@@ -40,11 +42,3 @@ public:
 	};
 };
 
-ref class BoardCellEventArgs : EventArgs {
-private:
-	int _x, _y;
-public:
-	BoardCellEventArgs(int x, int y);
-	int getX();
-	int getY();
-};

@@ -7,10 +7,7 @@ BoardCell::BoardCell(int x, int y)
 {
 	X = x;
 	Y = y;
-	AutoSize = false;
 	TextAlign = ContentAlignment::MiddleCenter;
-	BackColor = Color::LightBlue;
-	AllowDrop = true;
 	Location = Point(x, y);
 	BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
 }
@@ -35,6 +32,10 @@ void BoardCell::OnCellStateChenged()
 	case BoardCellState::ShotShip:
 		Text = ShipHitChar.ToString();
 		BackColor = ShipColor;
+		break;
+	case BoardCellState::ShipSunked:
+		BackColor = ShipSunkedColor;
+		Text = ShipHitChar.ToString();
 		break;
 	}
 	Invalidate();
@@ -69,15 +70,3 @@ void BoardCell::State::set(BoardCellState value)
 	OnCellStateChenged();
 }
 
-BoardCellEventArgs::BoardCellEventArgs(int x, int y) {
-	_x = x;
-	_y = y;
-}
-
-int BoardCellEventArgs::getX() {
-	return _x;
-}
-
-int BoardCellEventArgs::getY() {
-	return _y;
-}

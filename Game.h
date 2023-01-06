@@ -1,9 +1,12 @@
 #pragma once
 #include <cstdlib>
 #include "MainForm.h"
-#include "BoardCell.h"
-#include "Ship.h"
+#include "Player.h"
+#include <iostream>
 
+
+const int PLAYER_INDEX = 1;
+const int COMPUTER_INDEX = 2;
 
 namespace Battleship {
 
@@ -21,6 +24,8 @@ namespace Battleship {
 	public ref class Game : public System::Windows::Forms::Form
 	{
 	public:
+
+
 		Random^ random = gcnew Random();
 
 		Game(MainForm^ parent)
@@ -29,6 +34,8 @@ namespace Battleship {
 			this->Text = "Морской бой";
 			Init();
 			parentForm = parent;
+
+			//StartGame();
 		}
 
 		
@@ -46,83 +53,72 @@ namespace Battleship {
 		}
 
 	private:
-		const int mapSize = 11;
+		const int MAP_SIZE = 11;
 		const int cellSize = 30;
-		const int distanceBetween = 50;
+		const int distanceBetween = 60;
 		String^ alphabet = "АБВГДЕЖЗИК";
 		MainForm^ parentForm;
-		array<BoardCell^, 2>^ _cellsMap = gcnew array<BoardCell^, 2>(11, 11);
-		array<BoardCell^, 2>^ _cellsEnemyMap = gcnew array<BoardCell^, 2>(11, 11);
-		List<Ship^>^ _ships = gcnew List<Ship^>;
-		List<Ship^>^ _enemyShips = gcnew List<Ship^>;
-
+		int playerIndex = PLAYER_INDEX;
+		Board^ _board = gcnew Board();
+		Board^ _enemyBoard = gcnew Board();
+		Player^ player1;
+		Player^ player2;
+		//Timer^ timer = gcnew Timer();
 
 		void Init() {
 			CreateMaps();
 		}
 
 		void CreateMaps() {
-			this->Width = mapSize * 2 * cellSize + distanceBetween;
-			this->Height = mapSize * cellSize + 100;
-			for (int i = 0; i < mapSize; i++) {
-				for (int j = 0; j < mapSize; j++) {
-					BoardCell^ cell = gcnew BoardCell(j * cellSize, i * cellSize);
-					cell->State = BoardCellState::Empty;
-					cell->Size = System::Drawing::Size(cellSize, cellSize);
-					if (j == 0 || i == 0) {
-						cell->BackColor = Color::Gray;
-						if (i == 0 && j > 0) {
-							cell->Text = alphabet[j - 1].ToString();
-						}
-						if (j == 0 && i > 0) {
-							cell->Text = i.ToString();
-						}
-					}
-					else {
-						_cellsMap[i, j] = cell;
-					}
-					this->Controls->Add(cell);
-				}
-			}
+			this->Width = (MAP_SIZE + 1) * 2 * cellSize;
+			this->Height = MAP_SIZE * cellSize + 100;
+			CreateBoard(_board, true, 0);
+			CreateBoard(_enemyBoard, false, 360);
 
-			GenerateShips(_cellsMap, _ships, true);
+			player1 = gcnew Player(_enemyBoard);
+			player2 = gcnew Player(_board);
 
-			for (int i = 0; i < mapSize; i++) {
-				for (int j = 0; j < mapSize; j++) {
-					BoardCell^ cell = gcnew BoardCell(360 + j * cellSize, i * cellSize);
-					cell->State = BoardCellState::Empty;
-					cell->Size = System::Drawing::Size(cellSize, cellSize);
-					cell->Click += gcnew System::EventHandler(this, &Game::OnCellClick);
-					if (j == 0 || i == 0) {
-						cell->BackColor = Color::Gray;
-						if (i == 0 && j > 0) {
-							cell->Text = alphabet[j - 1].ToString();
-						}
-						if (j == 0 && i > 0) {
-							cell->Text = i.ToString();
-						}
-					}
-					else {
-						_cellsEnemyMap[i, j] = cell;
-					}
-					this->Controls->Add(cell);
-				}
-			}
-
-			GenerateShips(_cellsEnemyMap, _enemyShips, false);
 
 			Label^ map1Title = gcnew Label();
 			map1Title->Text = "Карта игрока 1";
-			map1Title->Location = Point(mapSize * cellSize / 2 - map1Title->Size.Width / 2, mapSize * cellSize + 20);
+			map1Title->Location = Point(MAP_SIZE * cellSize / 2 - map1Title->Size.Width / 2, MAP_SIZE * cellSize + 20);
+			map1Title->Click += gcnew System::EventHandler(this, &Battleship::Game::startGame);
 			this->Controls->Add(map1Title);
+
 
 			Label^ map2Title = gcnew Label();
 			map2Title->Text = "Карта игрока 2";
-			map2Title->Location = Point(3 * mapSize * cellSize / 2 + distanceBetween - map2Title->Size.Width / 2, mapSize * cellSize + 20);
+			map2Title->Location = Point(3 * MAP_SIZE * cellSize / 2 + cellSize * 2 - map2Title->Size.Width / 2, MAP_SIZE * cellSize + 20);
 			this->Controls->Add(map2Title);
 		}
 
-		void GenerateShips(array<BoardCell^, 2>^ _cells, List<Ship^>^ _ships, bool drawShips) {
+		void CreateBoard(Board^ board, bool isPlayer, int right) {
+			for (int i = 0; i < MAP_SIZE; i++) {
+				for (int j = 0; j < MAP_SIZE; j++) {
+					BoardCell^ cell = gcnew BoardCell(j * cellSize + right, i * cellSize);
+					cell->State = BoardCellState::Empty;
+					cell->Size = System::Drawing::Size(cellSize, cellSize);
+					if (j == 0 || i == 0) {
+						cell->BackColor = Color::Gray;
+						if (i == 0 && j > 0) {
+							cell->Text = alphabet[j - 1].ToString();
+						}
+						if (j == 0 && i > 0) {
+							cell->Text = i.ToString();
+						}
+					}
+					else {
+						if (!isPlayer)
+							cell->Click += gcnew EventHandler(this, &Game::OnCellClick);
+						board->map[i, j] = cell;
+					}
+					this->Controls->Add(cell);
+				}
+			}
+			GenerateShips(board, isPlayer);
+		}
+
+		void GenerateShips(Board^ board, bool drawShips) {
 			int ships[] = { 4, 3, 2, 1 };
 			int x, y;
 			int dir = 0;
@@ -132,37 +128,37 @@ namespace Battleship {
 				x = random->Next(1, 11);
 				y = random->Next(1, 11);
 				dir = random->Next(2);
-				if (insertShip(x, y, type, dir, _cells, _ships, drawShips)) {
+				if (insertShip(x, y, type, dir, board, drawShips)) {
 					ships[type]--;
 				}
 			}
 		}
 
-		bool insertShip(int x, int y, int type, int dir, array<BoardCell^, 2>^ _cells, List<Ship^>^ _ships, bool drawShips) {
+		bool insertShip(int x, int y, int type, int dir, Board^ board, bool drawShips) {
 			int lengthShip = type + 1;
-			if (x < 1 || x > mapSize - 1 || y < 1 || y > mapSize - 1)
+			if (x < 1 || x > MAP_SIZE - 1 || y < 1 || y > MAP_SIZE - 1)
 				return false;
-			if (test(x, y, lengthShip, dir, _ships)) {
+			if (test(x, y, lengthShip, dir, board->ships)) {
 				switch (dir) {
-					case 0:
-						if (lengthShip + x > mapSize - 1)
-							return false;
-						_ships->Add(gcnew Ship(x, y, lengthShip, dir));
-						if (drawShips) {
-							for (int i = x; i < x + lengthShip; i++) {
-								_cells[i, y]->State = BoardCellState::Ship;
-							}
+				case 0:
+					if (lengthShip + x > MAP_SIZE - 1)
+						return false;
+					board->ships->Add(gcnew Ship(x, y, lengthShip, dir));
+					if (drawShips) {
+						for (int i = x; i < x + lengthShip; i++) {
+							board->map[i, y]->State = BoardCellState::Ship;
 						}
+					}
 					break;
-					case 1:
-						if (lengthShip + y > mapSize - 1)
-							return false;
-						_ships->Add(gcnew Ship(x, y, lengthShip, dir));
-						if (drawShips) {
-							for (int i = y; i < y + lengthShip; i++) {
-								_cells[x, i]->State = BoardCellState::Ship;
-							}
+				case 1:
+					if (lengthShip + y > MAP_SIZE - 1)
+						return false;
+					board->ships->Add(gcnew Ship(x, y, lengthShip, dir));
+					if (drawShips) {
+						for (int i = y; i < y + lengthShip; i++) {
+							board->map[x, i]->State = BoardCellState::Ship;
 						}
+					}
 					break;
 				}
 				return true;
@@ -172,7 +168,7 @@ namespace Battleship {
 			}
 		}
 
-		bool test(int x, int y, int length, int orientation, List<Ship^>^ _ships) {
+		bool test(int x, int y, int length, int orientation, List<Ship^>^ ships) {
 			int width, height;
 			if (orientation == 0) {
 				width = length + 2;
@@ -187,7 +183,7 @@ namespace Battleship {
 				y -= 1;
 			}
 
-			for each (Ship ^ ship in _ships) {
+			for each (Ship ^ ship in ships) {
 				int yRight = ship->y, xRight = ship->x;
 				if (ship->orientation) {
 					yRight = ship->y + ship->length - 1;
@@ -202,13 +198,58 @@ namespace Battleship {
 			return true;
 		}
 
-		Ship^ getShip(int x, int y, List<Ship^>^ _ships) {
-			for each(Ship^ ship in _ships) {
-				if (ship->isLocatedAt(x, y)) {
-					return ship;
-				}
+
+		//void StartGame() {
+		//	playerIndex = random->Next(1, 3);
+		//	int i = 100;
+		//	while (i--) {
+		//		if (playerIndex == COMPUTER_INDEX) {
+		//			//timer->Stop();
+		//			if (computerShot(player2) == ShotResult::Missed)
+		//				playerIndex = PLAYER_INDEX;
+		//		}
+		//		/*else {
+		//			if (computerShot(player1) == ShotResult::Missed)
+		//				playerIndex = COMPUTER_INDEX;
+		//		}*/
+		//		/*else {
+		//			timer->Interval = random->Next(100, 1000);
+		//			timer->Start();
+		//		}*/
+		//	}
+		//}
+
+		bool isWin() {
+			if (player1->board->shipsAlive == 0) {
+				this->Controls->Clear();
+				Label^ Win = gcnew Label();
+				Win->Text = "Выиграл игрок #1";
+				Win->Location = Point(this->ClientSize.Width / 2 - Win->Width / 2, this->ClientSize.Height / 2 - Win->Height / 2);
+				this->Controls->Add(Win);
+				return true;
 			}
-			return nullptr;
+			if (player2->board->shipsAlive == 0) {
+				this->Controls->Clear();
+				Label^ Win = gcnew Label();
+				Win->Text = "Выиграл игрок #2";
+				Win->Location = Point(this->ClientSize.Width / 2 - Win->Width / 2, this->ClientSize.Height / 2 - Win->Height / 2);
+				this->Controls->Add(Win);
+				return true;
+			}
+			return false;
+		}
+
+		ShotResult computerShot(Player^ computer) {
+			int x, y;
+			do {
+				x = random->Next(1, MAP_SIZE);
+				y = random->Next(1, MAP_SIZE);
+			} while (computer->historyShots->ContainsKey(Point(x, y)));
+
+			//_board->map[x, y]->State = computer->board->map[x, y]->State;
+			ShotResult result = computer->shotTo(y, x);
+			computer->addShotResult(x, y, result);
+			return result;
 		}
 
 		/// <summary>
@@ -230,12 +271,33 @@ namespace Battleship {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 		}
 #pragma endregion
-	void Game::OnCellClick(Object^ sender, EventArgs^ e)
+	void OnCellClick(Object^ sender, EventArgs^ e)
 	{
-
+		if (playerIndex == COMPUTER_INDEX)
+			return;
 		BoardCell^ cell = safe_cast<BoardCell^>(sender);
-		BoardCellEventArgs^ eventArgs = gcnew BoardCellEventArgs(cell->X, cell->Y);
-		OnClick(eventArgs);
+		int x = (int)ceil((cell->X - cellSize * 12) / cellSize);
+		int y = (int)ceil(cell->Y / cellSize);
+		ShotResult result;
+		if (player1->historyShots->ContainsKey(Point(x, y)))
+			return;
+		result = player1->shotTo(x, y);
+		isWin();
+		player1->addShotResult(x, y, result);
+		if (result == ShotResult::Missed) {
+			playerIndex = COMPUTER_INDEX;
+			do {
+				result = computerShot(player2);
+			} while (result != ShotResult::Missed && !isWin());
+			playerIndex = PLAYER_INDEX;
+		}
+		return;
+	};
+
+	private: System::Void startGame(System::Object^ sender, System::EventArgs^ e) {
+		//StartGame();
 	};
 	};
+
+
 }

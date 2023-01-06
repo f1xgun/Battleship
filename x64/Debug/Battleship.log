@@ -1,5 +1,5 @@
 ﻿  Game.cpp
   MainForm.cpp
   Создание кода...
-  BoardCell.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
+  Board.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
   Battleship.vcxproj -> G:\projects\Battleship\x64\Debug\Battleship.exe

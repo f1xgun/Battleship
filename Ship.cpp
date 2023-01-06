@@ -17,3 +17,7 @@ bool Ship::isLocatedAt(int _x, int _y) {
 	}
 	return (_x >= x && _x <= xRight && _y >= y && _y <= yRight);
 }
+
+bool Ship::isSunk::get() {
+	return hitCount == length;
+}
