@@ -10,10 +10,12 @@ public enum struct ShotResult
 };
 
 
+
 ref class Player {
 public:
 	Dictionary<Point, ShotResult>^ historyShots;
 	Board^ board;
+	List<Point>^ targets;
 
 	Player(Board^ enemyBoard);
 	void addShotResult(int x, int y, ShotResult result);

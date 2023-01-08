@@ -17,6 +17,7 @@ namespace Battleship {
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace System::Collections::Generic;
+	using namespace System::IO;
 
 	/// <summary>
 	/// Сводка для Game
@@ -25,20 +26,21 @@ namespace Battleship {
 	{
 	public:
 
-
+		StreamWriter^ pwriter;
+		StreamReader^ preader;
 		Random^ random = gcnew Random();
 
 		Game(MainForm^ parent)
 		{
 			InitializeComponent();
 			this->Text = "Морской бой";
-			Init();
 			parentForm = parent;
+			parentForm->button1->Enabled = false;
+			parentForm->button2->Enabled = false;
+			Init();
 
-			//StartGame();
+			StartGame(parent->twoComputers);
 		}
-
-		
 
 	protected:
 		/// <summary>
@@ -53,51 +55,65 @@ namespace Battleship {
 		}
 
 	private:
-		const int MAP_SIZE = 11;
-		const int cellSize = 30;
-		const int distanceBetween = 60;
-		String^ alphabet = "АБВГДЕЖЗИК";
 		MainForm^ parentForm;
-		int playerIndex = PLAYER_INDEX;
+
+		const int MAP_SIZE = 11;
+		const int CELL_SIZE = 30;
+		
+		int playerIndex;
+		String^ alphabet = "АБВГДЕЖЗИК";
 		Board^ _board = gcnew Board();
 		Board^ _enemyBoard = gcnew Board();
 		Player^ player1;
 		Player^ player2;
-		//Timer^ timer = gcnew Timer();
+		Timer^ timer = gcnew Timer();
+		bool canSoot = false;
+		bool read;
 
 		void Init() {
+			read = parentForm->isResume;
+			if (!read)
+				pwriter = gcnew StreamWriter("game.txt");
+			else
+				preader = File::OpenText("game.txt");
 			CreateMaps();
 		}
 
 		void CreateMaps() {
-			this->Width = (MAP_SIZE + 1) * 2 * cellSize;
-			this->Height = MAP_SIZE * cellSize + 100;
-			CreateBoard(_board, true, 0);
+			timer->Enabled = false;
+			this->Width = (MAP_SIZE + 1) * 2 * CELL_SIZE;
+			this->Height = MAP_SIZE * CELL_SIZE + 100;
+			CreateBoard(_board, !(parentForm->twoComputers), 0);
 			CreateBoard(_enemyBoard, false, 360);
 
 			player1 = gcnew Player(_enemyBoard);
 			player2 = gcnew Player(_board);
 
+			if (read) {
+				uploadSteps();
+				preader->Close();
+				read = false;
+				pwriter = gcnew StreamWriter("game.txt", true);
+			}
 
 			Label^ map1Title = gcnew Label();
 			map1Title->Text = "Карта игрока 1";
-			map1Title->Location = Point(MAP_SIZE * cellSize / 2 - map1Title->Size.Width / 2, MAP_SIZE * cellSize + 20);
-			map1Title->Click += gcnew System::EventHandler(this, &Battleship::Game::startGame);
+			map1Title->Location = Point(MAP_SIZE * CELL_SIZE / 2 - map1Title->Size.Width / 2, MAP_SIZE * CELL_SIZE + 20);
 			this->Controls->Add(map1Title);
 
 
 			Label^ map2Title = gcnew Label();
 			map2Title->Text = "Карта игрока 2";
-			map2Title->Location = Point(3 * MAP_SIZE * cellSize / 2 + cellSize * 2 - map2Title->Size.Width / 2, MAP_SIZE * cellSize + 20);
+			map2Title->Location = Point(3 * MAP_SIZE * CELL_SIZE / 2 + CELL_SIZE * 2 - map2Title->Size.Width / 2, MAP_SIZE * CELL_SIZE + 20);
 			this->Controls->Add(map2Title);
 		}
 
 		void CreateBoard(Board^ board, bool isPlayer, int right) {
 			for (int i = 0; i < MAP_SIZE; i++) {
 				for (int j = 0; j < MAP_SIZE; j++) {
-					BoardCell^ cell = gcnew BoardCell(j * cellSize + right, i * cellSize);
+					BoardCell^ cell = gcnew BoardCell(j * CELL_SIZE + right, i * CELL_SIZE);
 					cell->State = BoardCellState::Empty;
-					cell->Size = System::Drawing::Size(cellSize, cellSize);
+					cell->Size = System::Drawing::Size(CELL_SIZE, CELL_SIZE);
 					if (j == 0 || i == 0) {
 						cell->BackColor = Color::Gray;
 						if (i == 0 && j > 0) {
@@ -108,14 +124,59 @@ namespace Battleship {
 						}
 					}
 					else {
-						if (!isPlayer)
+						if (!isPlayer && !parentForm->twoComputers)
 							cell->Click += gcnew EventHandler(this, &Game::OnCellClick);
 						board->map[i, j] = cell;
 					}
 					this->Controls->Add(cell);
 				}
 			}
-			GenerateShips(board, isPlayer);
+			if (read)
+				try {
+					for (int i = 0; i < 10; i++) {
+						array<String^>^ s = preader->ReadLine()->Split(' ');
+						drawShipsOnBoard(Int32::Parse(s[0]), Int32::Parse(s[1]), Int32::Parse(s[2]), Int32::Parse(s[3]), board, isPlayer);
+					}
+				}
+				catch (Exception^ ex) {
+					GenerateShips(board, isPlayer);
+					return;
+				}
+			else
+				GenerateShips(board, isPlayer);
+		}
+
+		void uploadSteps() {
+			String^ temp;
+			while ((temp = preader->ReadLine()) != nullptr) {
+				array<String^>^ s = temp->Split(' ');
+				if (Int32::Parse(s[0]) == PLAYER_INDEX) {
+					player1->shotTo(Int32::Parse(s[2]), Int32::Parse(s[1]));
+				}
+				else {
+					player2->shotTo(Int32::Parse(s[1]), Int32::Parse(s[2]));
+				}
+			}
+		}
+
+		void drawShipsOnBoard(int x, int y, int lengthShip, int dir, Board^ board, bool drawShips) {
+			board->ships->Add(gcnew Ship(x, y, lengthShip, dir));
+			switch (dir) {
+			case 0:
+				if (drawShips) {
+					for (int i = x; i < x + lengthShip; i++) {
+						board->map[i, y]->State = BoardCellState::Ship;
+					}
+				}
+				break;
+			case 1:
+				if (drawShips) {
+					for (int i = y; i < y + lengthShip; i++) {
+						board->map[x, i]->State = BoardCellState::Ship;
+					}
+				}
+				break;
+			}
 		}
 
 		void GenerateShips(Board^ board, bool drawShips) {
@@ -144,6 +205,7 @@ namespace Battleship {
 					if (lengthShip + x > MAP_SIZE - 1)
 						return false;
 					board->ships->Add(gcnew Ship(x, y, lengthShip, dir));
+					pwriter->WriteLine(x.ToString() + " " + y.ToString() + " " + lengthShip.ToString() + " " + dir.ToString());
 					if (drawShips) {
 						for (int i = x; i < x + lengthShip; i++) {
 							board->map[i, y]->State = BoardCellState::Ship;
@@ -154,6 +216,7 @@ namespace Battleship {
 					if (lengthShip + y > MAP_SIZE - 1)
 						return false;
 					board->ships->Add(gcnew Ship(x, y, lengthShip, dir));
+					pwriter->WriteLine(x.ToString() + " " + y.ToString() + " " + lengthShip.ToString() + " " + dir.ToString());
 					if (drawShips) {
 						for (int i = y; i < y + lengthShip; i++) {
 							board->map[x, i]->State = BoardCellState::Ship;
@@ -199,25 +262,46 @@ namespace Battleship {
 		}
 
 
-		//void StartGame() {
-		//	playerIndex = random->Next(1, 3);
-		//	int i = 100;
-		//	while (i--) {
-		//		if (playerIndex == COMPUTER_INDEX) {
-		//			//timer->Stop();
-		//			if (computerShot(player2) == ShotResult::Missed)
-		//				playerIndex = PLAYER_INDEX;
-		//		}
-		//		/*else {
-		//			if (computerShot(player1) == ShotResult::Missed)
-		//				playerIndex = COMPUTER_INDEX;
-		//		}*/
-		//		/*else {
-		//			timer->Interval = random->Next(100, 1000);
-		//			timer->Start();
-		//		}*/
-		//	}
-		//}
+		void StartGame(bool twoComputers) {
+
+			timer->Tick += gcnew System::EventHandler(this, &Battleship::Game::OnTick);
+			timer->Interval = 1000;
+			timer->Enabled = true;
+			playerIndex = random->Next(1, 3);
+			ShotResult result;
+			if (!twoComputers) {
+				if (playerIndex == COMPUTER_INDEX) {
+					do {
+						result = computerShot(player2);
+					} while (result != ShotResult::Missed && !isWin());
+					playerIndex = PLAYER_INDEX;
+				}
+			}
+			else {
+				while (!isWin()) {
+					if (playerIndex == PLAYER_INDEX) {
+						do {
+							if (canSoot) {
+								result = computerShot(player1);
+								canSoot = false;
+							}
+						} while (result != ShotResult::Missed && !isWin());
+						playerIndex = COMPUTER_INDEX;
+					}
+					else {
+						do {
+							/*timer->Interval = 1000;
+							timer->Enabled = true;*/
+							if (canSoot) {
+								result = computerShot(player2);
+								canSoot = false;
+							}
+						} while (result != ShotResult::Missed && !isWin());
+						playerIndex = PLAYER_INDEX;
+					}
+				}
+			}
+		}
 
 		bool isWin() {
 			if (player1->board->shipsAlive == 0) {
@@ -226,6 +310,7 @@ namespace Battleship {
 				Win->Text = "Выиграл игрок #1";
 				Win->Location = Point(this->ClientSize.Width / 2 - Win->Width / 2, this->ClientSize.Height / 2 - Win->Height / 2);
 				this->Controls->Add(Win);
+				pwriter->Close();
 				return true;
 			}
 			if (player2->board->shipsAlive == 0) {
@@ -234,6 +319,7 @@ namespace Battleship {
 				Win->Text = "Выиграл игрок #2";
 				Win->Location = Point(this->ClientSize.Width / 2 - Win->Width / 2, this->ClientSize.Height / 2 - Win->Height / 2);
 				this->Controls->Add(Win);
+				pwriter->Close();
 				return true;
 			}
 			return false;
@@ -241,21 +327,97 @@ namespace Battleship {
 
 		ShotResult computerShot(Player^ computer) {
 			int x, y;
+			if (computer->targets->Count == 0)
+				randomShot(computer, x, y);
+			else {
+				tryShotShip(computer, x, y);
+			}
+			ShotResult result = computer->shotTo(y, x);
+			if (!read)
+				pwriter->WriteLine(playerIndex.ToString() + " " + y.ToString() + " " + x.ToString());
+			if (result == ShotResult::ShipSunked || result == ShotResult::ShipHit) {
+				computer->targets->Add(Point(x, y));
+			}
+			if (result == ShotResult::ShipSunked) {
+				for each (Point point in computer->targets) {
+					computer->historyShots[Point(point.X - 1, point.Y - 1)] = result;
+					computer->historyShots[Point(point.X, point.Y - 1)] = result;
+					computer->historyShots[Point(point.X + 1, point.Y - 1)] = result;
+					computer->historyShots[Point(point.X - 1, point.Y)] = result;
+					computer->historyShots[Point(point.X, point.Y)] = result;
+					computer->historyShots[Point(point.X + 1, point.Y)] = result;
+					computer->historyShots[Point(point.X - 1, point.Y + 1)] = result;
+					computer->historyShots[Point(point.X, point.Y + 1)] = result;
+					computer->historyShots[Point(point.X + 1, point.Y + 1)] = result;
+				}
+
+				computer->targets->Clear();
+			}
+			else
+				computer->addShotResult(x, y, result);
+			return result;
+		}
+
+		void tryShotShip(Player^ computer, int& x, int& y) {
+			int _x, _y;
+			Point lastShot, prevShot, nextShot;
+			if (computer->targets->Count == 1) {
+				lastShot = computer->targets[0];
+				do {
+					do
+					{
+						_x = random->Next(-1, 2);
+						_y = random->Next(-1, 2);
+					} while (Math::Abs(_x + _y) != 1);
+					x = lastShot.X + _x;
+					y = lastShot.Y + _y;
+
+				} while (!isValidShot(computer, x, y));
+				return;
+			}
+			else {
+				lastShot = computer->targets[computer->targets->Count - 1];
+				prevShot = computer->targets[computer->targets->Count - 2];
+				nextShot = Point(2 * lastShot.X - prevShot.X, 2 * lastShot.Y - prevShot.Y);
+				if (!isValidShot(computer, nextShot.X, nextShot.Y)) {
+					x = computer->targets[0].X - computer->targets[1].X;
+					y = computer->targets[0].Y - computer->targets[1].Y;
+
+					nextShot = Point(computer->targets[0].X + x, computer->targets[0].Y + y);
+					if (!isValidShot(computer, nextShot.X, nextShot.Y)) {
+						nextShot = Point(computer->targets[computer->targets->Count - 1].X + x, computer->targets[computer->targets->Count - 1].Y + y);
+						if (!isValidShot(computer, nextShot.X, nextShot.Y)) {
+							computer->targets->Clear();
+							randomShot(computer, x, y);
+							return;
+						}
+					}
+				}
+			}
+			x = nextShot.X;
+			y = nextShot.Y;
+		}
+
+		void randomShot(Player^ computer, int& x, int& y) {
 			do {
 				x = random->Next(1, MAP_SIZE);
 				y = random->Next(1, MAP_SIZE);
 			} while (computer->historyShots->ContainsKey(Point(x, y)));
+		}
 
-			//_board->map[x, y]->State = computer->board->map[x, y]->State;
-			ShotResult result = computer->shotTo(y, x);
-			computer->addShotResult(x, y, result);
-			return result;
+
+		bool isValidShot(Player^ computer, int x, int y) {
+			if (computer->historyShots->ContainsKey(Point(x, y))
+				|| (x < 1 || x >= MAP_SIZE)
+				|| (y < 1 || y >= MAP_SIZE))
+				return false;
+			return true;
 		}
 
 		/// <summary>
 		/// Обязательная переменная конструктора.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -265,25 +427,30 @@ namespace Battleship {
 		void InitializeComponent(void)
 		{
 			this->components = gcnew System::ComponentModel::Container();
-			this->Size = System::Drawing::Size(300,300);
+			this->Size = System::Drawing::Size(300, 300);
 			this->Text = L"Game";
 			this->Padding = System::Windows::Forms::Padding(0);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &Battleship::Game::OnFormClosing);
 		}
 #pragma endregion
-	void OnCellClick(Object^ sender, EventArgs^ e)
-	{
+		void OnCellClick(Object^ sender, EventArgs^ e) {
 		if (playerIndex == COMPUTER_INDEX)
 			return;
+
 		BoardCell^ cell = safe_cast<BoardCell^>(sender);
-		int x = (int)ceil((cell->X - cellSize * 12) / cellSize);
-		int y = (int)ceil(cell->Y / cellSize);
+		int x = (int)ceil((cell->X - CELL_SIZE * 12) / CELL_SIZE);
+		int y = (int)ceil(cell->Y / CELL_SIZE);
+
 		ShotResult result;
 		if (player1->historyShots->ContainsKey(Point(x, y)))
 			return;
+
 		result = player1->shotTo(x, y);
+		pwriter->WriteLine(playerIndex.ToString() + " " + y.ToString() + " " + x.ToString());
 		isWin();
 		player1->addShotResult(x, y, result);
+
 		if (result == ShotResult::Missed) {
 			playerIndex = COMPUTER_INDEX;
 			do {
@@ -291,13 +458,30 @@ namespace Battleship {
 			} while (result != ShotResult::Missed && !isWin());
 			playerIndex = PLAYER_INDEX;
 		}
-		return;
 	};
 
-	private: System::Void startGame(System::Object^ sender, System::EventArgs^ e) {
-		//StartGame();
-	};
-	};
+	void Battleship::Game::OnTick(Object^ sender, EventArgs^ e) {
+		canSoot = true;
+	}
 
+	void Battleship::Game::OnFormClosing(Object^ sender, FormClosingEventArgs^ e) {
+		parentForm->button1->Enabled = true;
+		parentForm->button2->Enabled = true;
+		try {
+			pwriter->Close();
+		}
+		catch (Exception^ ex) {
+			return;
+		}
+		try {
+			if (File::ReadAllLines("game.txt")->Length != 0) {
+				parentForm->button2->Visible = true;
+			}
+		}
+		catch (Exception^ ex) {
+			return;
+		}
+	}
+	};
 
 }

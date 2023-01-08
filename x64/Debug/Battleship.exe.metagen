@@ -27,10 +27,17 @@ Struct BoardCellState: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeField
 Class Battleship.MainForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    Boolean twoComputers : Public
+    Boolean isResume : Public
+    System.Windows.Forms.Button button1 : Public
+    System.Windows.Forms.Button button2 : Public
 Class Battleship.Game: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(Battleship.MainForm): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Fields:
+    System.IO.StreamWriter pwriter : Public
+    System.IO.StreamReader preader : Public
     System.Random random : Public
 Struct ShotResult: AutoLayout, AnsiClass, Class, Public, Sealed, BeforeFieldInit
   :System.Enum

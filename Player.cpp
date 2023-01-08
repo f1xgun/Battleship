@@ -3,6 +3,7 @@
 Player::Player(Board^ enemyBoard) {
 	board = enemyBoard;
 	historyShots = gcnew Dictionary<Point, ShotResult>();
+	targets = gcnew List<Point>();
 }
 
 void Player::addShotResult(int x, int y, ShotResult result) {
