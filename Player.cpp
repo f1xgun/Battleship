@@ -11,7 +11,7 @@ void Player::addShotResult(int x, int y, ShotResult result) {
 }
 
 ShotResult Player::shotTo(int x, int y) {
-	Ship^ ship = board->getShip(y, x);
+	Ship^ ship = board->getShip(x, y);
 	
 	if (ship == nullptr)
 	{
@@ -33,7 +33,7 @@ ShotResult Player::shotTo(int x, int y) {
 		}
 		for (int i = ship->x; i < xRight + 1; i++)
 			for (int j = ship->y; j < yRight + 1; j++)
-				board->map[i, j]->State = BoardCellState::ShipSunked;
+				board->map[j, i]->State = BoardCellState::ShipSunked;
 		return ShotResult::ShipSunked;
 	}
 	return ShotResult::ShipHit;
