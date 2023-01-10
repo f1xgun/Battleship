@@ -29,14 +29,15 @@ namespace Battleship {
 		StreamWriter^ pwriter;
 		StreamReader^ preader;
 		Random^ random = gcnew Random();
-
 		Game(MainForm^ parent)
 		{
+			
 			InitializeComponent();
 			this->Text = "Ìîðñêîé áîé";
 			parentForm = parent;
 			parentForm->button1->Enabled = false;
 			parentForm->button2->Enabled = false;
+			parentForm->íîâàÿÈãðàToolStripMenuItem->Enabled = false;
 			Init();
 
 			StartGame();
@@ -422,6 +423,7 @@ namespace Battleship {
 			this->Text = L"Game";
 			this->Padding = System::Windows::Forms::Padding(0);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &Battleship::Game::OnFormClosing);
 		}
 #pragma endregion
@@ -468,6 +470,7 @@ namespace Battleship {
 		timer->Enabled = false;
 		parentForm->button1->Enabled = true;
 		parentForm->button2->Enabled = true;
+		parentForm->íîâàÿÈãðàToolStripMenuItem->Enabled = true;
 		try {
 			pwriter->Close();
 		}

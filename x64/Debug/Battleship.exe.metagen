@@ -31,6 +31,7 @@ Class Battleship.MainForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Boolean twoComputers : Public
     Boolean isResume : Public
     System.Windows.Forms.Button button1 : Public
+    System.Windows.Forms.ToolStripMenuItem новаяИграToolStripMenuItem : Public
     System.Windows.Forms.Button button2 : Public
 Class Battleship.Game: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form

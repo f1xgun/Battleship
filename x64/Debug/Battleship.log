@@ -1,13 +1,13 @@
 ﻿  Game.cpp
 G:\projects\Battleship\MainForm.h(267,20): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(147,23): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(474,21): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(482,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(148,23): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(477,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(485,21): warning C4101: ex: неиспользованная локальная переменная
   MainForm.cpp
 G:\projects\Battleship\MainForm.h(267,20): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(147,23): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(474,21): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(482,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(148,23): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(477,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(485,21): warning C4101: ex: неиспользованная локальная переменная
   Создание кода...
   Board.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
   Battleship.vcxproj -> G:\projects\Battleship\x64\Debug\Battleship.exe

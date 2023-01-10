@@ -38,7 +38,7 @@ namespace Battleship {
 	protected:
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ менюToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^ новаяИграToolStripMenuItem;
+	public: System::Windows::Forms::ToolStripMenuItem^ новаяИграToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ игрокИКомпьютерToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ компьютерИКомпьютерToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ оПрограммеToolStripMenuItem;
@@ -165,12 +165,12 @@ namespace Battleship {
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainForm";
 			this->Text = L"Морской бой";
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
-
 		}
 #pragma endregion
 
