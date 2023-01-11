@@ -1,8 +1,8 @@
 #include "BoardCell.h"
-using namespace System;
-using namespace System::Drawing;
-using namespace System::Drawing::Drawing2D;
 
+
+// конструктор с аргументами класса BoardCell \
+args: координаты x и y, в результате получим новый объект типа BoardCell
 BoardCell::BoardCell(int x, int y)
 {
 	X = x;
@@ -10,8 +10,10 @@ BoardCell::BoardCell(int x, int y)
 	TextAlign = ContentAlignment::MiddleCenter;
 	Location = Point(x, y);
 	BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+	State = BoardCellState::Empty;
 }
 
+// функци€ изменени€ внешнего вида €чейки доски при изменении ее состо€ни€
 void BoardCell::OnCellStateChenged()
 {
 	SuspendLayout();
@@ -42,6 +44,7 @@ void BoardCell::OnCellStateChenged()
 	ResumeLayout();
 }
 
+// функци€ рисовани€ €чейки доски
 void BoardCell::OnPaint(PaintEventArgs^ e)
 {
 	Label::OnPaint(e);
@@ -59,11 +62,14 @@ void BoardCell::OnPaint(PaintEventArgs^ e)
 	delete pen;
 }
 
+// функци€ дл€ получени€ значени€ свойства состо€ни€ €чейки
 BoardCellState BoardCell::State::get()
 {
 	return _state;
 }
 
+// функци€ дл€ изменени€ свойства состо€ни€ €чейки, args: новое состо€ние \
+в результате получим перерисовку €чейки в зависимости от нового состо€ни€
 void BoardCell::State::set(BoardCellState value)
 {
 	_state = value;

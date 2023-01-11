@@ -8,6 +8,8 @@ public:
 	array<BoardCell^, 2>^ map;
 	List<Ship^>^ ships;
 	int shipsAlive;
+
 	Board();
+
 	Ship^ getShip(int x, int y);
 };

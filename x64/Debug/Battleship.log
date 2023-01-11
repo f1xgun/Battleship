@@ -1,13 +1,91 @@
-﻿  Game.cpp
-G:\projects\Battleship\MainForm.h(267,20): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(148,23): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(477,21): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(485,21): warning C4101: ex: неиспользованная локальная переменная
+﻿  Board.cpp
+  BoardCell.cpp
+G:\projects\Battleship\BoardCell.cpp(5,1): warning C4010: однострочный комментарий содержит знак объединения строк
+  Game.cpp
+G:\projects\Battleship\MainForm.h(219,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\MainForm.h(270,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\MainForm.h(277,20): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(74,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(89,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(124,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(125,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(126,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(165,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(190,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(191,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(213,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(214,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(232,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(233,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(234,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(270,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(271,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(303,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(317,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(343,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(344,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(359,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(360,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(361,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(362,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(388,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(430,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(439,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(470,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(471,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(494,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(495,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(515,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(516,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(517,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(156,23): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(526,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(534,21): warning C4101: ex: неиспользованная локальная переменная
   MainForm.cpp
-G:\projects\Battleship\MainForm.h(267,20): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(148,23): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(477,21): warning C4101: ex: неиспользованная локальная переменная
-G:\projects\Battleship\Game.h(485,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\MainForm.h(219,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\MainForm.h(270,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\MainForm.h(277,20): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(74,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(89,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(124,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(125,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(126,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(165,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(190,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(191,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(213,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(214,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(232,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(233,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(234,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(270,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(271,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(303,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(317,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(343,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(344,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(359,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(360,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(361,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(362,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(388,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(430,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(439,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(470,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(471,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(494,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(495,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(515,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(516,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(517,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Game.h(156,23): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(526,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\Game.h(534,21): warning C4101: ex: неиспользованная локальная переменная
+G:\projects\Battleship\MainForm.cpp(8,1): warning C4010: однострочный комментарий содержит знак объединения строк
+  Player.cpp
+G:\projects\Battleship\Player.cpp(4,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Player.cpp(12,1): warning C4010: однострочный комментарий содержит знак объединения строк
+G:\projects\Battleship\Player.cpp(18,1): warning C4010: однострочный комментарий содержит знак объединения строк
   Создание кода...
   Board.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
   Battleship.vcxproj -> G:\projects\Battleship\x64\Debug\Battleship.exe

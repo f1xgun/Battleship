@@ -2,6 +2,7 @@
 using namespace System;
 using namespace System::Windows::Forms;
 using namespace System::Drawing;
+using namespace System::Drawing::Drawing2D;
 
 public enum struct BoardCellState
 {
@@ -15,13 +16,13 @@ public enum struct BoardCellState
 ref class BoardCell : Label
 {
 private:
-	static initonly Color DefaultBorderColor = Color::FromArgb(214, 214, 214);
-	static initonly Color DefaultBackgroundColor = Color::FromArgb(222, 222, 222);
-	static initonly Color ShipColor = Color::FromArgb(0, 255, 25);
-	static initonly Color ShipSunkedColor = Color::FromArgb(222, 0, 0);
+	static const Color DefaultBorderColor = Color::FromArgb(214, 214, 214);
+	static const Color DefaultBackgroundColor = Color::FromArgb(222, 222, 222);
+	static const Color ShipColor = Color::FromArgb(0, 255, 25);
+	static const Color ShipSunkedColor = Color::FromArgb(222, 0, 0);
 
-	static initonly Char ShipHitChar = 'x';
-	static initonly Char MissedHitChar = (Char)(0x2022);
+	static const Char ShipHitChar = 'x';
+	static const Char MissedHitChar = (Char)(0x2022);
 
 	void OnCellStateChenged();
 	BoardCellState _state;

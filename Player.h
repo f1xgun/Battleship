@@ -9,8 +9,6 @@ public enum struct ShotResult
 	ShipSunked
 };
 
-
-
 ref class Player {
 public:
 	Dictionary<Point, ShotResult>^ historyShots;
@@ -18,6 +16,7 @@ public:
 	List<Point>^ targets;
 
 	Player(Board^ enemyBoard);
+
 	void addShotResult(int x, int y, ShotResult result);
 	ShotResult shotTo(int x, int y);
 };

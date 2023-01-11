@@ -34,7 +34,7 @@ namespace Battleship {
 				delete components;
 			}
 		}
-	public: System::Windows::Forms::Button^ button1;
+	public: System::Windows::Forms::Button^ newGameButton;
 	protected:
 	private: System::Windows::Forms::MenuStrip^ menuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^ менюToolStripMenuItem;
@@ -43,7 +43,7 @@ namespace Battleship {
 	private: System::Windows::Forms::ToolStripMenuItem^ компьютерИКомпьютерToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ оПрограммеToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ обАвтореToolStripMenuItem;
-	public: System::Windows::Forms::Button^ button2;
+	public: System::Windows::Forms::Button^ continueGameButton;
 	private: Label^ text;
 		   Button^ exitButton;
 		   PictureBox^ picture;
@@ -64,7 +64,7 @@ namespace Battleship {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->newGameButton = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->менюToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->новаяИграToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -72,19 +72,19 @@ namespace Battleship {
 			this->компьютерИКомпьютерToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->оПрограммеToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->обАвтореToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->continueGameButton = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
-			// button1
+			// newGameButton
 			// 
-			this->button1->Location = System::Drawing::Point(130, 94);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(75, 25);
-			this->button1->TabIndex = 0;
-			this->button1->Text = L"Новая игра";
-			this->button1->UseVisualStyleBackColor = true;
-			this->button1->Click += gcnew System::EventHandler(this, &MainForm::button1_Click);
+			this->newGameButton->Location = System::Drawing::Point(130, 94);
+			this->newGameButton->Name = L"newGameButton";
+			this->newGameButton->Size = System::Drawing::Size(75, 25);
+			this->newGameButton->TabIndex = 0;
+			this->newGameButton->Text = L"Новая игра";
+			this->newGameButton->UseVisualStyleBackColor = true;
+			this->newGameButton->Click += gcnew System::EventHandler(this, &MainForm::newGameButton_Click);
 			// 
 			// menuStrip1
 			// 
@@ -143,24 +143,24 @@ namespace Battleship {
 			this->обАвтореToolStripMenuItem->Text = L"Об авторе";
 			this->обАвтореToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::обАвтореToolStripMenuItem_Click);
 			// 
-			// button2
+			// continueGameButton
 			// 
-			this->button2->Location = System::Drawing::Point(102, 136);
-			this->button2->Name = L"button2";
-			this->button2->Size = System::Drawing::Size(131, 25);
-			this->button2->TabIndex = 2;
-			this->button2->Text = L"Продолжить игру";
-			this->button2->UseVisualStyleBackColor = true;
-			this->button2->Visible = false;
-			this->button2->Click += gcnew System::EventHandler(this, &MainForm::button2_Click);
+			this->continueGameButton->Location = System::Drawing::Point(102, 136);
+			this->continueGameButton->Name = L"continueGameButton";
+			this->continueGameButton->Size = System::Drawing::Size(131, 25);
+			this->continueGameButton->TabIndex = 2;
+			this->continueGameButton->Text = L"Продолжить игру";
+			this->continueGameButton->UseVisualStyleBackColor = true;
+			this->continueGameButton->Visible = false;
+			this->continueGameButton->Click += gcnew System::EventHandler(this, &MainForm::continueGameButton_Click);
 			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(335, 387);
-			this->Controls->Add(this->button2);
-			this->Controls->Add(this->button1);
+			this->Controls->Add(this->continueGameButton);
+			this->Controls->Add(this->newGameButton);
 			this->Controls->Add(this->menuStrip1);
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainForm";
@@ -175,25 +175,27 @@ namespace Battleship {
 #pragma endregion
 
 
-private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e);
-private: System::Void игрокИКомпьютерToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
-private: System::Void компьютерИКомпьютерToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
-private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e);
-private: System::Void оПрограммеToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	this->Controls->Remove(this->text);
-	this->Controls->Remove(this->exitButton);
-	this->Controls->Remove(this->picture);
-	this->Width = 640;
-	this->Height = 640;
-	this->Controls->Remove(button1);
-	this->Controls->Remove(button2);
-	this->text = gcnew Label();
-	text->TextAlign = ContentAlignment::MiddleCenter;
-	text->AutoSize = false;
-	text->Font = gcnew Drawing::Font("Roboto", 12);
-	text->Size = System::Drawing::Size(this->ClientSize.Width - 40, this->Height - 200);
-	text->Location = Point(this->ClientSize.Width / 2 - text->Width / 2, this->menuStrip1->Height);
-	text->Text = "Правила игры. \
+	private: System::Void newGameButton_Click(System::Object^ sender, System::EventArgs^ e);
+	private: System::Void игрокИКомпьютерToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
+	private: System::Void компьютерИКомпьютерToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
+	private: System::Void continueGameButton_Click(System::Object^ sender, System::EventArgs^ e);
+
+		   // Функция для формирования содержания для пункта "О программе" при нажатии на соответствующую кнопку в меню
+	private: System::Void оПрограммеToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+		this->Controls->Remove(this->text);
+		this->Controls->Remove(this->exitButton);
+		this->Controls->Remove(this->picture);
+		this->Width = 640;
+		this->Height = 640;
+		this->Controls->Remove(newGameButton);
+		this->Controls->Remove(continueGameButton);
+		this->text = gcnew Label();
+		text->TextAlign = ContentAlignment::MiddleCenter;
+		text->AutoSize = false;
+		text->Font = gcnew Drawing::Font("Roboto", 12);
+		text->Size = System::Drawing::Size(this->ClientSize.Width - 40, this->Height - 200);
+		text->Location = Point(this->ClientSize.Width / 2 - text->Width / 2, this->menuStrip1->Height);
+		text->Text = "Правила игры. \
 «Морской бой» — игра для двух участников, в которой игроки по очереди называют координаты на неизвестной им карте соперника. \
 Если у соперника по этим координатам имеется корабль (координаты заняты), то корабль или его часть «топится», а попавший получает право сделать ещё один ход. \
 Цель игрока — первым потопить все корабли противника.\n\n Корабли размещаются автоматически. После этого случайным образом определяется игрок, который ходит первым. \
@@ -201,67 +203,75 @@ private: System::Void оПрограммеToolStripMenuItem_Click(System::Object
 при промахе - точка. Если игрок попал, то он ходит еще раз, иначе ход переходит другому игроку.\n\n Победителем считается тот, кто первым потопит \
 все 10 кораблей противника.\n\n В данном приложении можно играть как пользователь с компьютером, так и компьютер с компьютером. \
 Также есть возможность сохранения игры и ее продолжение.";
-	this->Controls->Add(text);
-	this->exitButton = gcnew Button();
-	exitButton->Text = "Назад";
-	exitButton->Font = gcnew Drawing::Font("Roboto", 10);
-	exitButton->Padding.All = 10;
-	exitButton->Size = System::Drawing::Size(80, 40);
-	exitButton->Location = Point(this->ClientSize.Width / 2 - exitButton->Width / 2, text->Location.Y + text->Size.Height + 20);
-	exitButton->TextAlign = ContentAlignment::MiddleCenter;
-	this->Controls->Add(exitButton);
-	exitButton->Click += gcnew System::EventHandler(this, &Battleship::MainForm::OnClick);
-}
-private: System::Void Battleship::MainForm::OnClick(System::Object^ sender, System::EventArgs^ e) {
-	this->Controls->Remove(this->text);
-	this->Controls->Remove(this->exitButton);
-	this->Controls->Remove(this->picture);
-	this->Controls->Add(button1);
-	this->Controls->Add(button2);
-	this->ClientSize = System::Drawing::Size(335, 387);
-}
-private: System::Void обАвтореToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	this->Controls->Remove(this->text);
-	this->Controls->Remove(this->exitButton);
-	this->Width = 640;
-	this->Height = 640;
-	this->Controls->Remove(button1);
-	this->Controls->Remove(button2);
-	this->picture = gcnew PictureBox();
-	try {
-		picture->Image = Image::FromFile("ava.jpg");
-		picture->Width = 180;
-		picture->Height = 200;
-		picture->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
-		picture->Location = Point(this->ClientSize.Width / 2 - picture->Width / 2, this->menuStrip1->Height + 30);
-		this->Controls->Add(picture);
+		this->Controls->Add(text);
+		this->exitButton = gcnew Button();
+		exitButton->Text = "Назад";
+		exitButton->Font = gcnew Drawing::Font("Roboto", 10);
+		exitButton->Padding.All = 10;
+		exitButton->Size = System::Drawing::Size(80, 40);
+		exitButton->Location = Point(this->ClientSize.Width / 2 - exitButton->Width / 2, text->Location.Y + text->Size.Height + 20);
+		exitButton->TextAlign = ContentAlignment::MiddleCenter;
+		this->Controls->Add(exitButton);
+		exitButton->Click += gcnew System::EventHandler(this, &Battleship::MainForm::OnClick);
 	}
-	catch (Exception^ ex) {
-		MessageBox::Show("Не удалось загрузить фотографию: " + ex->Message, "Ошибка",
-			MessageBoxButtons::OK, MessageBoxIcon::Asterisk);
+
+		   // Функция обработчик события при нажатии на кнопку "Назад" в пунктах "О программе" и "Об авторе", которая удаляет из контроллеров \
+		   	   ранее добавленные компоненты и формирует кнопки для главного экрана
+	private: System::Void Battleship::MainForm::OnClick(System::Object^ sender, System::EventArgs^ e) {
+		this->Controls->Remove(this->text);
+		this->Controls->Remove(this->exitButton);
+		this->Controls->Remove(this->picture);
+		this->Controls->Add(newGameButton);
+		this->Controls->Add(continueGameButton);
+		this->ClientSize = System::Drawing::Size(335, 387);
 	}
-	this->text = gcnew Label();
-	text->TextAlign = ContentAlignment::TopCenter;
-	text->AutoSize = false;
-	text->Font = gcnew Drawing::Font("Roboto", 12);
-	text->Size = System::Drawing::Size(this->ClientSize.Width - 40, this->ClientSize.Height - picture->Height - 300);
-	text->Location = Point(this->ClientSize.Width / 2 - text->Width / 2, picture->Location.Y + picture->Height + this->menuStrip1->Height + 50);
-	text->Text = "Михайлов Д. С.\n 221-3210\n 2023 г.\n f1xgun@yandex.ru \n github: f1xgun";
-	this->Controls->Add(text);
-	this->exitButton = gcnew Button();
-	exitButton->Text = "Назад";
-	exitButton->Font = gcnew Drawing::Font("Roboto", 10);
-	exitButton->Padding.All = 10;
-	exitButton->Size = System::Drawing::Size(80, 40);
-	exitButton->Location = Point(this->ClientSize.Width / 2 - exitButton->Width / 2, text->Location.Y + text->Size.Height + 20);
-	exitButton->TextAlign = ContentAlignment::MiddleCenter;
-	this->Controls->Add(exitButton);
-	exitButton->Click += gcnew System::EventHandler(this, &Battleship::MainForm::OnClick);
-}
-private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) {
-	try {
-		if (File::ReadAllLines("game.txt")->Length != 0) {
-			this->button2->Visible = true;
+
+		   // Функция для формирования содержания для пункта "Об авторе" при нажатии на соответствующую кнопку в меню
+	private: System::Void обАвтореToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+		this->Controls->Remove(this->text);
+		this->Controls->Remove(this->exitButton);
+		this->Width = 640;
+		this->Height = 640;
+		this->Controls->Remove(newGameButton);
+		this->Controls->Remove(continueGameButton);
+		this->picture = gcnew PictureBox();
+		try {
+			picture->Image = Image::FromFile("ava.jpg");
+			picture->Width = 180;
+			picture->Height = 200;
+			picture->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
+			picture->Location = Point(this->ClientSize.Width / 2 - picture->Width / 2, this->menuStrip1->Height + 30);
+			this->Controls->Add(picture);
+		}
+		catch (Exception^ ex) {
+			MessageBox::Show("Не удалось загрузить фотографию: " + ex->Message, "Ошибка",
+				MessageBoxButtons::OK, MessageBoxIcon::Asterisk);
+		}
+		this->text = gcnew Label();
+		text->TextAlign = ContentAlignment::TopCenter;
+		text->AutoSize = false;
+		text->Font = gcnew Drawing::Font("Roboto", 12);
+		text->Size = System::Drawing::Size(this->ClientSize.Width - 40, this->ClientSize.Height - picture->Height - 300);
+		text->Location = Point(this->ClientSize.Width / 2 - text->Width / 2, picture->Location.Y + picture->Height + this->menuStrip1->Height + 50);
+		text->Text = "Михайлов Д. С.\n 221-3210\n 2023 г.\n f1xgun@yandex.ru \n github: f1xgun";
+		this->Controls->Add(text);
+		this->exitButton = gcnew Button();
+		exitButton->Text = "Назад";
+		exitButton->Font = gcnew Drawing::Font("Roboto", 10);
+		exitButton->Padding.All = 10;
+		exitButton->Size = System::Drawing::Size(80, 40);
+		exitButton->Location = Point(this->ClientSize.Width / 2 - exitButton->Width / 2, text->Location.Y + text->Size.Height + 20);
+		exitButton->TextAlign = ContentAlignment::MiddleCenter;
+		this->Controls->Add(exitButton);
+		exitButton->Click += gcnew System::EventHandler(this, &Battleship::MainForm::OnClick);
+	}
+
+		   // Функция обработчик события загрузки формы, которая првоеряет наличие сохраненной игры и отображает кнопку продолжить, \
+		   	   если оно имеется
+	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) {
+		try {
+			if (File::ReadAllLines("game.txt")->Length != 0) {
+				this->continueGameButton->Visible = true;
 		}
 	}
 	catch (Exception^ ex) {

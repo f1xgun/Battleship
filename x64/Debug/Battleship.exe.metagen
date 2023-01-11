@@ -30,9 +30,9 @@ Class Battleship.MainForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   Fields:
     Boolean twoComputers : Public
     Boolean isResume : Public
-    System.Windows.Forms.Button button1 : Public
+    System.Windows.Forms.Button newGameButton : Public
     System.Windows.Forms.ToolStripMenuItem новаяИграToolStripMenuItem : Public
-    System.Windows.Forms.Button button2 : Public
+    System.Windows.Forms.Button continueGameButton : Public
 Class Battleship.Game: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(Battleship.MainForm): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

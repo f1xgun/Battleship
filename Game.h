@@ -2,8 +2,6 @@
 #include <cstdlib>
 #include "MainForm.h"
 #include "Player.h"
-#include <iostream>
-
 
 const int PLAYER_INDEX = 1;
 const int COMPUTER_INDEX = 2;
@@ -35,8 +33,9 @@ namespace Battleship {
 			InitializeComponent();
 			this->Text = "Морской бой";
 			parentForm = parent;
-			parentForm->button1->Enabled = false;
-			parentForm->button2->Enabled = false;
+			// Блокировка кнопок начала новой игры для избегания конфликтов записи и чтения
+			parentForm->newGameButton->Enabled = false;
+			parentForm->continueGameButton->Enabled = false;
 			parentForm->новаяИграToolStripMenuItem->Enabled = false;
 			Init();
 
@@ -57,20 +56,22 @@ namespace Battleship {
 
 	private:
 		MainForm^ parentForm;
+		bool read;
 
 		const int MAP_SIZE = 11;
 		const int CELL_SIZE = 30;
+		String^ alphabet = "АБВГДЕЖЗИК";
+		Timer^ timer = gcnew Timer();
 		
 		int playerIndex;
-		String^ alphabet = "АБВГДЕЖЗИК";
+		ShotResult lastShotResult;
 		Board^ _board = gcnew Board();
 		Board^ _enemyBoard = gcnew Board();
 		Player^ player1;
 		Player^ player2;
-		Timer^ timer = gcnew Timer();
-		ShotResult lastShotResult;
-		bool read;
 
+		// Функция определения точки начала программы, если это новая игра, то открывается поток для записи \
+		иначе открывается поток для четния
 		void Init() {
 			read = parentForm->isResume;
 			if (!read) {
@@ -84,12 +85,16 @@ namespace Battleship {
 			CreateMaps();
 		}
 
+		// Функция генерации всего необходимого графического интерфейса для игры, а именно досок, \
+		их прикрепление к игрокам и подписи досок
 		void CreateMaps() {
 			timer->Enabled = false;
+
 			this->Width = (MAP_SIZE + 1) * 2 * CELL_SIZE;
 			this->Height = MAP_SIZE * CELL_SIZE + 100;
+
 			CreateBoard(_board, !(parentForm->twoComputers), 0);
-			CreateBoard(_enemyBoard, false, 360);
+			CreateBoard(_enemyBoard, false, (MAP_SIZE + 1) * CELL_SIZE);
 
 			player1 = gcnew Player(_enemyBoard);
 			player2 = gcnew Player(_board);
@@ -115,11 +120,14 @@ namespace Battleship {
 			this->Controls->Add(map2Title);
 		}
 
+		// Функция генерации доски с кораблями, если новая игра, то мы запускаем функцию генерации кораблей \
+		иначе, мы считываем координаты уже расставленных кораблей из внешнего файла \
+		args: объекта типа Board, является ли доска доской игрока, в зависимости от этого навешивается обработчик события на ячейки, \
+		расстояние от левого края окна. В результате получаем полноценную доску с сгенерированными кораблями
 		void CreateBoard(Board^ board, bool isPlayer, int right) {
 			for (int i = 0; i < MAP_SIZE; i++) {
 				for (int j = 0; j < MAP_SIZE; j++) {
 					BoardCell^ cell = gcnew BoardCell(j * CELL_SIZE + right, i * CELL_SIZE);
-					cell->State = BoardCellState::Empty;
 					cell->Size = System::Drawing::Size(CELL_SIZE, CELL_SIZE);
 					if (j == 0 || i == 0) {
 						cell->BackColor = Color::Gray;
@@ -153,6 +161,8 @@ namespace Battleship {
 				GenerateShips(board, isPlayer);
 		}
 
+		// функция воспроизведения шагов при продолжении игры, считывает логи из файла, который содержит строки из индекса стреляющего \
+		и координаты выстрела, результатом является состояние игры соответствующее состоянию прошлой игры
 		void uploadSteps() {
 			String^ temp;
 			while ((temp = preader->ReadLine()) != nullptr) {
@@ -176,6 +186,9 @@ namespace Battleship {
 			}
 		}
 
+		// функция считывания характеристик кораблей, их добавление в объект доски и прорисовка при продолжении игры \
+		args: координаты начала корабля, его длина, направление, объект Board, в которой необходимо добавить корабли и \
+		переменная, отвечающая за необходимость прорисовки кораблей
 		void drawShipsOnBoard(int x, int y, int lengthShip, int dir, Board^ board, bool drawShips) {
 			board->ships->Add(gcnew Ship(x, y, lengthShip, dir));
 			switch (dir) {
@@ -196,6 +209,9 @@ namespace Battleship {
 			}
 		}
 
+		// функция генерации кораблей \
+		args: объект Board, в который генерируются корабли и переменная, отвечающая за необходимость прорисовки кораблей \
+		В результате получим сгенерированные корабли, которые будут записаны в поле объекта типа Board
 		void GenerateShips(Board^ board, bool drawShips) {
 			int ships[] = { 4, 3, 2, 1 };
 			int x, y;
@@ -212,6 +228,10 @@ namespace Battleship {
 			}
 		}
 
+		// функция вставки корабля на поле и его запись в поле объекта типа Board \
+		args: случайные координаты корабля, его тип, счучайное направление : верт/гориз, переменная, отвечающая за необходимость прорисовки кораблей \
+		В результате работы функции получим сгенерированный корабль, который будет записан в поле объекта типа Board и прорисован на доске при необходимости \
+		или вернется ложное значение, соответствующее невозможности вставки корабля в заданные координаты, полученные случайным образом
 		bool insertShip(int x, int y, int type, int dir, Board^ board, bool drawShips) {
 			int lengthShip = type + 1;
 			if (test(x, y, lengthShip, dir, board->ships)) {
@@ -246,6 +266,9 @@ namespace Battleship {
 			}
 		}
 
+		// функция проверки возможности вставки корабля с случайно сгенерированными координатами и направлением с учетом правил игры "Морской бой" \
+		args: координаты корабля, его длины и направление, список уже сгенерированных кораблей \
+		В результате получим булевое значение, отображающее возможнсть/невозможность вставки корабля с данными характеристиками
 		bool test(int x, int y, int length, int orientation, List<Ship^>^ ships) {
 			int width, height;
 			if (orientation == 0) {
@@ -276,7 +299,8 @@ namespace Battleship {
 			return true;
 		}
 
-
+		// функция начала игры, которая определяет индекс стреляющего игрока, если мы продолжаем игру и навешивает функцию обработчик события \
+		при каждом тике, равным 1 с и запускает таймер
 		void StartGame() {
 			if (lastShotResult == ShotResult::Missed) {
 				if (playerIndex == PLAYER_INDEX)
@@ -289,6 +313,8 @@ namespace Battleship {
 			timer->Enabled = true;
 		}
 
+		// функция проверки победы одного из игроков, в результате получим правдивость окончания игры или нет \
+		в случае окончания, очищаем все контроллеры и добавляем экран, информирующий о победе какого-либо игрока
 		bool isWin() {
 			if (player1->board->shipsAlive == 0) {
 				this->Controls->Clear();
@@ -313,6 +339,9 @@ namespace Battleship {
 			return false;
 		}
 
+		// функция выстрела компьютера, которая запускает либо выстрел по случайным координатам, либо по ячейкам рядом с попавшим ранее кораблем \
+		args: объект типа Player, в котором полем является доска противника \
+		в результате получим выстрел компьютера, проверка результата выстрела на попадание и запись координат выстрела во внешний файл
 		void computerShot(Player^ computer) {
 			int x, y;
 			if (computer->targets->Count == 0)
@@ -326,6 +355,11 @@ namespace Battleship {
 			shipShotted(computer, x, y);
 		}
 
+		// функция проверки выстрела на попадание в корабль или его затопление \
+		args: объект типа Player, координаты выстрела \
+		в результате получим, либо добавление выстрела в историю выстрелов, либо еще одну точку попадания в корабль и её сохранение, \
+		либо, если корабль затоплен, то обрисовку ячеек вокруг корабля для компьютера \
+		для реализации более умного поведения компьютера и очищение списка с точками попаданий в корабль
 		void shipShotted(Player^ computer, int x, int y) {
 			if (lastShotResult == ShotResult::ShipSunked || lastShotResult == ShotResult::ShipHit) {
 				computer->targets->Add(Point(x, y));
@@ -350,6 +384,8 @@ namespace Battleship {
 			}
 		}
 
+		// функция для попытки попадания в корабль и его дальнейшее потопление при ранее одном и более попаданий в него \
+		args: объект типа Player, координаты выстрела, в результате получим координаты, по которым необходимо произвести выстрел компьютеру
 		void tryShotShip(Player^ computer, int& x, int& y) {
 			int _x, _y;
 			Point lastShot, prevShot, nextShot;
@@ -390,6 +426,8 @@ namespace Battleship {
 			y = nextShot.Y;
 		}
 
+		// функция для генерации случайных координат и проверка на наличие ранее совершенного выстрела по этим координатам \
+		args: объект типа Player, координаты выстрела, в результате получим координаты, по которым необходимо произвести выстрел компьютеру 
 		void randomShot(Player^ computer, int& x, int& y) {
 			do {
 				x = random->Next(1, MAP_SIZE);
@@ -397,7 +435,8 @@ namespace Battleship {
 			} while (computer->historyShots->ContainsKey(Point(x, y)));
 		}
 
-
+		// функция првоерки правильности сгенерированных координат для выстрела \
+		args: объект типа Player, координаты выстрела, в результате получим правильность/неправильность сгенерированных координат
 		bool isValidShot(Player^ computer, int x, int y) {
 			if (computer->historyShots->ContainsKey(Point(x, y))
 				|| (x < 1 || x >= MAP_SIZE)
@@ -427,6 +466,9 @@ namespace Battleship {
 			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &Battleship::Game::OnFormClosing);
 		}
 #pragma endregion
+	// функция обработчик события клика на ячейку поля противника \
+		args: объект, для которого вызвано событие и аргументы события \
+		в результате получим выстрел пользователя по полю компьютера, запись координат выстрела, проверка на окончание игры и переход хода компьютеру в случае промаха
 	void OnCellClick(Object^ sender, EventArgs^ e) {
 		if (playerIndex == COMPUTER_INDEX)
 			return;
@@ -440,14 +482,17 @@ namespace Battleship {
 
 		lastShotResult = player1->shotTo(x, y);
 		pwriter->WriteLine(playerIndex.ToString() + " " + x.ToString() + " " + y.ToString());
-		isWin();
 		player1->addShotResult(x, y, lastShotResult);
+		isWin();
 
 		if (lastShotResult == ShotResult::Missed) {
 			playerIndex = COMPUTER_INDEX;
 		}
 	};
 
+	// функция обработчик события tick таймера, которая вызывает функцию выстрела компьютера \
+	args: объект, для которого вызвано событие и аргументы события \
+	в результате получаем выстрел компьютера и переход хода другому игроку в случае промаха, а также проверка на окончание игры
 	void Battleship::Game::OnTick(Object^ sender, EventArgs^ e) {
 		if (playerIndex == PLAYER_INDEX && parentForm->twoComputers) {
 			computerShot(player1);
@@ -466,10 +511,14 @@ namespace Battleship {
 		isWin();
 	}
 
+	// функция обработчик события закрытия формы \
+	args: объект, для которого вызвано событие и аргументы события \
+	в результате получим остановку таймера, разблокировку кнопок начала игры в новом окне, закрытие потока записи, если он был открыт \
+	проверка на наличие внешнего файла с сохранением и отображение кнопки продолжить игру в главном окне
 	void Battleship::Game::OnFormClosing(Object^ sender, FormClosingEventArgs^ e) {
 		timer->Enabled = false;
-		parentForm->button1->Enabled = true;
-		parentForm->button2->Enabled = true;
+		parentForm->newGameButton->Enabled = true;
+		parentForm->continueGameButton->Enabled = true;
 		parentForm->новаяИграToolStripMenuItem->Enabled = true;
 		try {
 			pwriter->Close();
@@ -479,7 +528,7 @@ namespace Battleship {
 		}
 		try {
 			if (File::ReadAllLines("game.txt")->Length != 0) {
-				parentForm->button2->Visible = true;
+				parentForm->newGameButton->Visible = true;
 			}
 		}
 		catch (Exception^ ex) {
